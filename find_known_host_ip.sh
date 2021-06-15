@@ -6,21 +6,31 @@
 # echo "to get tha mac address oe need root priviliges, please rerun with sudo";
 
 DEBUGGING=false
+
 if [ $# -eq 0 ]; then
     echo "No arguments passed, please pass the device name or MAC Address"
 		exit 1;
 fi
 
-# sed 1d is used to get of the frist line.
-# while head -n -1 is used to get rid of the last
+# if /path/to/file exists, then include it
+# [ -f /path/to/file  ] && . /path/to/file
 
-# get list of networks in compute
-NETWORKS=$(ip route | sed '1d' | cut -d' ' -f 1);
+get_networks () {
+	# get list of networks in compute
+	# sed 1d is used to get of the frist line.
+	# while head -n -1 is used to get rid of the last
+	NETWORKS=$(ip route | sed '1d' | cut -d' ' -f 1);
+}
 
-# get all hosts in the networks netwosk ip address
-for NETCUR in $NETWORKS; do
-	HOSTS+=$(nmap -sn $NETCUR | sed '1d' | head -n -1); 
-done
+
+get_live_hosts () { 
+		# get all hosts in the networks netwosk ip address
+		for NETCUR in $NETWORKS; do
+				HOSTS+=$(nmap -sn $NETCUR | sed '1d' | head -n -1); 
+		done
+}
+
+
 
 # declare declare a array 
 declare -a hosts_ar; 
